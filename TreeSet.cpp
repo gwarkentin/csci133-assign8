@@ -61,7 +61,20 @@ class TreeSet {
 		}
 		return NULL;
 	}
-
+	//find leftmost deepest item recursively
+	Node * findMinimum(Node * n) {
+		//checks to ensure list isn't empty first
+		if (n != NULL) {
+			//if there's something on the right recursively call function
+			if (n->getLeft() != NULL) {
+				return findMinimum(n->getLeft());
+			}
+			//otherwise return this node
+			return n;
+		}
+		//avoid seg fault
+		return NULL;
+	}
 	//find rightmost deepest item recursively
 	Node * findMaximum(Node * n) {
 		//checks to ensure list isn't empty first
@@ -76,8 +89,7 @@ class TreeSet {
 		//avoid seg fault
 		return NULL;
 	}
-	//counts all children and self. Needed to keep track of count after removal.
-	//either by recounting whole tree or quantity of items removed.
+	//counts all children and self.
 	int countChildren(Node * n) {
 		if (n == NULL) {
 			return 0;
@@ -87,7 +99,6 @@ class TreeSet {
 			return ++children;
 		}
 	}
-
 	//prints tree in order recursively
 	void printInorder(Node * n) {
 		if (n == NULL) {
@@ -154,7 +165,25 @@ class TreeSet {
 			}
 		}
 	}
-
+	//swap two items in tree, doesn't necessarily keep tree correct order
+	void transfer(Node * a, Node * b) {
+		if (a->getParent()->getLeft() == a) {
+			a->getParent()->setLeft(b);
+		}
+		else {
+			a->getParent()->setRight(b);
+		}
+		if (b->getParent()->getLeft() == b) {
+			b->getParent()->setLeft(a);
+		}
+		else {
+			b->getParent()->setRight(a);
+		}
+		Node * tmp;
+		tmp = a->getParent();	
+		a->setParent(b->getParent());
+		b->setParent(tmp);
+	}
 	public:
 		//constructor makes very empty tree
 		TreeSet() {
@@ -177,29 +206,77 @@ class TreeSet {
 				count++;
 			}
 		}
-		//deletes node if found, including node's children
+		//remove item keeping children rearange tree to still be in order
+		//we were literally given the function in class but I wanted to 
+		//solve it myself, obviously this is a poorly factored solution
 		bool remove(char key) {
 			key = std::toupper(key);
-			Node * n;
+			Node * n = NULL;
+			Node * tmp = NULL;
+			Node * s = NULL;//successor
 			//get the node of given key
 			n = findKey(key, root);	
-			//if found in tree
-			if (n != NULL) { 
-				//check if on left or right of parent
-				//dereference parent's appropriate pointer
-				if (n->getParent()->getLeft() == n) {
-					n->getParent()->setLeft(NULL);
+			//if item found
+			if (n != NULL) {
+				//if no left child just move everything up a spot
+				if (n->getLeft() == NULL) {
+					if (n->getRight() != NULL) {
+						tmp = n->getRight();
+						tmp->setParent(n->getParent());
+					}
+					if (n->getParent() == NULL) {
+						root = tmp;
+					}
+					else if(n == n->getParent()->getLeft()) {
+						n->getParent()->setLeft(tmp);
+					}
+					else {
+						n->getParent()->setRight(tmp);
+					}
 				}
+				//if no right child just move everything up a spot
+				else if (n->getRight() == NULL) {
+					if (n->getLeft() != NULL) {
+						tmp = n->getLeft();
+						tmp->setParent(n->getParent());
+					}
+					if (n->getParent() == NULL) {
+						root = tmp;
+					}
+					else if(n->getParent()->getRight() == n) {
+						n->getParent()->setRight(tmp);
+					}
+					else {
+						n->getParent()->setLeft(tmp);
+					}
+				}
+				//otherwise take rightmost child of left and replace
+				//node with that
 				else {
-					n->getParent()->setRight(NULL);
+					s = findMaximum(n->getLeft());
+					if (s->getParent() != n) {
+						s->getParent()->setRight(NULL);
+						s->setLeft(n->getLeft());
+						n->getLeft()->setParent(s);
+					}
+					s->setParent(n->getParent());
+					s->setRight(n->getRight());
+					n->getRight()->setParent(s);
+					if (n->getParent() == NULL) {
+						root = s;
+					}
+					else if(n->getParent()->getRight() == n) {
+						n->getParent()->setRight(s);
+					}
+					else {
+						n->getParent()->setLeft(s);
+					}
 				}
-				//reduce count by item and children removed
-				//rather than recounting entire tree which could be big
-				count -= countChildren(n);
-				//it was found and deleted
+				//item found and removed
+				count--;
 				return true;
 			}
-			//not found return false
+			//item not found
 			return false;
 		}
 		//lose the first node, lose everything
@@ -230,7 +307,15 @@ class TreeSet {
 		int getHeight() {
 			return getMaxDepth(root);
 		}
-
+		//returns min key, otherwise blank
+		char minimum() {
+			Node * n;
+			n = findMinimum(root);
+			if (n != NULL) {
+				return n->getKey(); 
+			}
+			return ' ';
+		}
 		//returns max key, otherwise blank
 		char maximum() {
 			Node * n;
@@ -259,6 +344,8 @@ int main() {
 	ts.add('x');
 	ts.add('a');
 	ts.add('t');
+	ts.add('z');
+	ts.add('g');
 
 	//count added to with .add() function
 	std::cout << "Stored Count: " << ts.getCount() << std::endl;
@@ -267,13 +354,16 @@ int main() {
 	ts.printTree();
 	std::cout << std::endl;
 
-	std::cout << "Did we find: " << ts.find('b') << std::endl;
+	std::cout << "Did we find: " << ts.find('f') << std::endl;
 	std::cout << "Max: " << ts.maximum() << std::endl;
 	std::cout << "Height: " << ts.getHeight() << std::endl;
-	std::cout << "Removed?: " << ts.remove('b') << std::endl;
+	std::cout << "Remove 'f': " << std::boolalpha << ts.remove('f') << std::endl;
 	
 	//just a test to make sure these matched
 	std::cout << "Stored Count: " << ts.getCount() << std::endl;
 	std::cout << "Count: " << ts.doCount() << std::endl;
+	std::cout << "Tree in order:\n";
+	ts.printTree();
+	std::cout << std::endl;
 	return 0;
 }
