@@ -1,10 +1,11 @@
 #include <iostream>
 
+//binary tree, each node has char key
 class TreeSet {
 	//Node object, could point to some data but I left it out
 	//Not certain why the left, right and parent have any need
-	//to be private, given that we can get and set all of them
-	//with direct functions
+	//to be private, given that we are getting and setting
+	//all of them essentially directly
 	class Node {
 		char key;
 		Node * left;
@@ -43,8 +44,9 @@ class TreeSet {
 	//recursively finds key given head initially	
 	//honestly I just made this off the cuff and am surprised it works
 	Node * findKey (char key, Node *n) {
-		//when it matches return that node
+		//in case empty list given
 		if (n != NULL) {
+			//when it matches return that node
 			if (n->getKey() == key) {
 				return n;
 			}
@@ -74,7 +76,8 @@ class TreeSet {
 		//avoid seg fault
 		return NULL;
 	}
-	//counts all children. Needed to keep track of count after removal.
+	//counts all children and self. Needed to keep track of count after removal.
+	//either by recounting whole tree or quantity of items removed.
 	int countChildren(Node * n) {
 		if (n == NULL) {
 			return 0;
@@ -116,6 +119,7 @@ class TreeSet {
 	}
 
 	//create node with given key where it belongs
+	//maybe this could be smaller but it works well enough as is
 	void addAt(char key, Node *n) {
 		//if less than current node, go left
 		if (key <= n->getKey()) {
@@ -152,13 +156,14 @@ class TreeSet {
 	}
 
 	public:
+		//constructor makes very empty tree
 		TreeSet() {
 			root = NULL;
 			count = 0;
 		}	
 		//adds new node with given key to tree
 		void add(char key) {
-			//we don't want upper and lower to be considered different
+			//we don't want upper and lowercase to be considered different
 			key = std::toupper(key);
 			//if first item, create at root position
 			if (root == NULL) {
@@ -200,6 +205,7 @@ class TreeSet {
 		//lose the first node, lose everything
 		void clear() {
 			root = NULL;
+			count = 0;
 		}
 		//return true if found, false if not
 		bool find(char key) {
