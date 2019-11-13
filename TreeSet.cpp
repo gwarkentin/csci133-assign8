@@ -347,23 +347,48 @@ int main() {
 	ts.add('z');
 	ts.add('g');
 
-	//count added to with .add() function
 	std::cout << "Stored Count: " << ts.getCount() << std::endl;
-
+	std::cout << "Count: " << ts.doCount() << std::endl; //this was not required
 	std::cout << "Tree in order:\n";
 	ts.printTree();
 	std::cout << std::endl;
-
-	std::cout << "Did we find: " << ts.find('f') << std::endl;
 	std::cout << "Max: " << ts.maximum() << std::endl;
 	std::cout << "Height: " << ts.getHeight() << std::endl;
-	std::cout << "Remove 'f': " << std::boolalpha << ts.remove('f') << std::endl;
-	
-	//just a test to make sure these matched
+
+	std::cout << std::endl;
+
+	std::cout << "Did we find 'f': " << std::boolalpha << ts.find('f') << std::endl;
+	std::cout << "Remove 'f': " << ts.remove('f') << std::endl;
 	std::cout << "Stored Count: " << ts.getCount() << std::endl;
-	std::cout << "Count: " << ts.doCount() << std::endl;
+	std::cout << "Count: " << ts.doCount() << std::endl; //this was not required
 	std::cout << "Tree in order:\n";
 	ts.printTree();
 	std::cout << std::endl;
+	std::cout << "Max: " << ts.maximum() << std::endl;
+	std::cout << "Height: " << ts.getHeight() << std::endl;
+
+	std::cout << std::endl;
+	
+	std::cout << "Did we find 't': " << std::boolalpha << ts.find('t') << std::endl;
+	std::cout << "Remove 't': " << ts.remove('t') << std::endl;
+	std::cout << "Stored Count: " << ts.getCount() << std::endl;
+	std::cout << "Count: " << ts.doCount() << std::endl; //this was not required
+	std::cout << "Tree in order:\n";
+	ts.printTree();
+	std::cout << std::endl;
+	std::cout << "Max: " << ts.maximum() << std::endl;
+	std::cout << "Height: " << ts.getHeight() << std::endl;
+
+	std::cout << std::endl;
+
+
+	ts.clear();
+	std::cout << "Stored Count: " << ts.getCount() << std::endl;
+	std::cout << "Count: " << ts.doCount() << std::endl; //this was not required
+	std::cout << "Tree in order:\n";
+	ts.printTree();
+	std::cout << "Max: " << ts.maximum() << std::endl;
+	std::cout << "Height: " << ts.getHeight() << std::endl;
+
 	return 0;
 }
